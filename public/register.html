@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bootstrap v5 - Alpha1</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/css/bootstrap.min.css" integrity="sha384-r4NyP46KrjDleawBgD5tp8Y7UzmLA05oM1iAEQ17CSuDqnUK2+k9luXQOfXJCJ4I" crossorigin="anonymous">
+</head>
+<style>
+    .signup {
+        justify-content: center;
+        align-content: center;
+        height: 800px;
+    }
+</style>
+<body class="text-center">
+<div class="container signup">
+    <img class="mb-4" width="50" height="50" src="https://static.thenounproject.com/png/14163-200.png" alt="myPng">
+
+    <div class="h3 mb-4 font-weight-normal">Please, sign in</div>
+    <form class="flex-column" name="regform">
+        <label class="col-md-3">
+            <input class="form-control" type="text" placeholder="Name" id="nickname" name="nickname" required>
+            <input type="email" placeholder="Email Address" class="form-control" id="mail" name="email" required>
+            <input class="form-control mb-5" type="password" placeholder="Password" id="pass" name="pass" required>
+            <button class="btn btn-lg btn-primary btn-block mb-5" type="submit">Sign in</button>
+            <div class="mt-5 mb-3 text-muted">© 2024</div>
+        </label>
+    </form>
+</div>
+
+<script>
+    function validateInput(pass, nickname) {
+        const validChars = /^[A-Za-z0-9@]+$/;
+
+        if (validChars.test(nickname.value) && validChars.test(pass.value)) {
+            return true;
+        } else {
+            if (!validChars.test(nickname.value)) {
+                alert('Name must contain only alphanumeric characters and @');
+                nickname.focus();
+            }
+            if (!validChars.test(pass.value)) {
+                alert('Password must contain only alphanumeric characters and @');
+                pass.focus();
+            }
+            return false;
+        }
+    }
+
+    document.querySelector('form').addEventListener('submit', function(event) {
+        event.preventDefault();
+        const formEl = event.target;
+        const formData = new FormData(formEl);
+        const data = Object.fromEntries(formData);
+
+        if (!validateInput(formEl.pass, formEl.nickname)) {
+            return;
+        }
+
+        fetch('/log', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        }).then(response => {
+            if (response.ok) {
+                window.location.href = '/site.html'; // Redirect on success
+            } else {
+                console.error('Server responded with an error');
+            }
+        }).catch(error => {
+            console.error('Error submitting form:', error);
+        });
+    });
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/js/bootstrap.min.js" integrity="sha384-oesi62hOLfzrys4LxRF63OJCXdXDipiYWBnvTl9Y9/TRlw5xlKIEHpNyvvDShgf/" crossorigin="anonymous"></script>
+</body>
+</html>

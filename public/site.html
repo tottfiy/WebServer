@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link
+          rel="icon"
+          type="image/png"
+          sizes="32x32"
+          href="../images/favicon-32x32.png"
+  />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+          href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&display=swap"
+          rel="stylesheet"
+  />
+  <link rel="stylesheet" href="/style.css" />
+  <title>Advisor</title>
+
+  <style>
+    :root {
+      --primary-color: hsl(23, 100%, 66%);
+      --text-color: hsl(193, 38%, 86%);
+      --bg-primary: hsl(218, 23%, 16%);
+      --bg-secondary: hsl(217, 19%, 24%);
+      --shadow: 0px 0px 30px 0 rgb(255, 143, 82);
+
+      /* Font */
+      --font-family: "Manrope", sans-serif;
+      --font-quote: 1.75rem;
+      --font-normal: 1rem;
+
+      /* Max-width */
+      --width-desktop: 1440px;
+      --width-mobile: 375px;
+      --width-primary: 1200px;
+
+      /* Font weight */
+      --weight-primary: 800;
+    }
+
+    img {
+      display: block;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: var(--font-family), fangsong;
+      background: var(--bg-primary);
+      color: hsl(193, 38%, 86%);
+    }
+
+    .container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      max-width: var(--width-desktop);
+      margin: 0 auto;
+      height: 100vh;
+      padding: 1rem;
+    }
+
+    .card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      background: var(--bg-secondary);
+      padding: 2.5rem 2rem 0;
+      max-width: 540px;
+      border-radius: 1rem;
+    }
+
+    .advice-tag {
+      color: var(--primary-color);
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      font-weight: 600;
+      font-size: 0.75rem;
+    }
+
+    .advice-quote {
+      font-weight: var(--weight-primary);
+      margin: 1.5rem 0 1rem; /* Reduce margin-bottom to make space smaller */
+      font-size: var(--font-quote);
+    }
+
+    .btn {
+      background: var(--primary-color);
+      padding: 1.3rem;
+      border-radius: 50%;
+      transform: translateY(20px); /* Adjusted to make it closer */
+      border: none;
+      cursor: pointer;
+      transition: 0.3s ease-in-out;
+      margin-bottom: 1rem; /* Add margin-bottom for empty line */
+    }
+
+    .btn:hover,
+    .btn:focus {
+      box-shadow: var(--shadow);
+    }
+
+    .counter-container {
+      margin-top: 2rem;
+      text-align: center;
+      color: var(--primary-color);
+      font-size: var(--font-normal);
+    }
+
+    .counter-text {
+      font-weight: var(--weight-primary);
+    }
+  </style>
+</head>
+<body>
+<main class="container">
+  <section class="card">
+    <h1 class="advice-tag">Advice # 117</h1>
+    <blockquote class="advice-quote">
+      "It is easy to sit up and take notice, what's difficult is getting up
+      and taking action."
+    </blockquote>
+
+    <button class="btn" id="dice-button">
+      <img src="https://www.svgrepo.com/show/520693/dice.svg" alt="Dice icon" height="50" width="50" />
+    </button>
+
+    <div class="counter-container">
+      <div id="click-count" class="counter-text">Click count: 0</div>
+      <div id="click-message"></div>
+    </div>
+  </section>
+</main>
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const adviceId = document.querySelector(".advice-tag");
+    const adviceQuote = document.querySelector(".advice-quote");
+    const btn = document.querySelector(".btn");
+    const clickCount = document.getElementById("click-count");
+    const clickMessage = document.getElementById("click-message");
+
+    let count = 0;
+
+    function generateAdvice() {
+      fetch("https://api.adviceslip.com/advice", { cache: "no-cache" })
+              .then((response) => {
+                if (!response.ok) {
+                  throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+              })
+              .then((response) => {
+                let data = response.slip;
+                let dataId = data.id;
+                let dataAdvice = data.advice;
+
+                adviceId.innerHTML = `Advice # ${dataId}`;
+                adviceQuote.innerHTML = dataAdvice;
+              })
+              .catch((error) => {
+                console.error("Error fetching advice:", error);
+                adviceId.innerHTML = "Error fetching advice";
+                adviceQuote.innerHTML = error.message;
+              });
+    }
+
+    // When button is clicked, run the generateAdvice function
+    btn.addEventListener("click", () => {
+      generateAdvice();
+    });
+
+    function handleClick(e) {
+      e.preventDefault();
+      count += 1;
+      clickCount.innerHTML = `Click count: ${count}`;
+      clickMessage.innerHTML = "You clicked on the dice!";
+    }
+
+    // Add handleClick event listener to the button
+    btn.addEventListener("click", handleClick);
+  });
+</script>
+</body>
+</html>
